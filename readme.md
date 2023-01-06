@@ -107,6 +107,35 @@ sequenceDiagram
     teetree_db_manager->>+notification_queue: update subscriptions to notifcations paginated results
 ```
 
+## what about Pola.rs with Apache Arrow files 
+- we store parquet files by sub-directory of the goal_model_id
+- the files we save as parquet can be hydrated into apache arrow files (arrow2)
+- we can then have functions that are written in Rust using pola.rs directly accessing arrow datasets  
+
+## Kubernetes  
+
+### storage 
+- we store files in the shared Kubernetes files system Longhorn 
+- we will use replication to ensure all files exist on all nodes 
+- this means when we spin up a new node (machine) the startup time includes synchronizing the longhorn filessystem 
+- each POD now has vCPU, RAM, and access to a persistent volume 
+
+#### pod tpes 
+- Machine types are determined via experimentation.  
+- What is the goal_period timeframe?
+- What is the basis_period timeframe? 
+- how many sites?
+- how many products?
+- how many customers?
+- how many salespersons?  
+
+Here is how we start. 
+- [ ] small: 2 vCPU, 2 GB RAM 
+- [ ] medium: 4 vCPU 4 GB RAM 
+- [ ] large: 8 vCPU  16 GB RAM 
+- [ ] xlarge: 16 vCPU, 64 GB RAM 
+
+
 
 
 
