@@ -58,6 +58,7 @@ Lets support both options with our solution.
 - client submits appends or updates or functions requests via a requst queue
 - since we have a single process per request topic we do not need to write a speical facade or singleton pattern
 - we update control tables in Postgresql: content_index, goal_model, and other tables 
+- with the ability to have read-only access to supporting duckdb files we do not need to pass large blobs of data in our request queue
 
 ```mermaid
 sequenceDiagram
