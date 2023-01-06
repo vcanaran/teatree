@@ -50,7 +50,7 @@ Lets support both options with our solution.
 - support creating of duckdb versions that can be shipped to local edge points such as a user's laptop for analysis 
 - supports a durable queue for inbound request services that result in mutating data as a set of functional intent-based services, for example updating data or invoking a compute job. 
 - support a direct connection for read-requests
-
+---
 ## We will start by showing the sequence diagrams for duckdb
 - avoid the need for the facade/singleton pattern by having one file read-write serviced by a single queue and query to a read-only file for multi-user access. 
 
@@ -106,7 +106,7 @@ sequenceDiagram
 sequenceDiagram     
     teetree_db_manager->>+notification_queue: update subscriptions to notifcations paginated results
 ```
-
+---
 ## what about Pola.rs with Apache Arrow files 
 - we store parquet files by sub-directory of the goal_model_id
 - the files we save as parquet can be hydrated into apache arrow files (arrow2)
@@ -129,7 +129,7 @@ sequenceDiagram
 - how many customers?
 - how many salespersons?  
 
-Here is how we start. 
+Here is how we start: 
 - [ ] small: 2 vCPU, 2 GB RAM 
 - [ ] medium: 4 vCPU 4 GB RAM 
 - [ ] large: 8 vCPU  16 GB RAM 
