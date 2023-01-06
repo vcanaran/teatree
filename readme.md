@@ -8,8 +8,6 @@ We want to build a high-performance compute data pipeline that ingests data, run
 - When input data, algorithms that operate on the knowing data models, and output data formats are known.
 
 
-
-
 ## Compare and contrast the following options
 
 1. Rust with DuckDB
@@ -53,9 +51,59 @@ Lets support both options with our solution.
 - supports a durable queue for inbound request services that result in mutating data as a set of functional intent-based services, for example updating data or invoking a compute job. 
 - support a direct connection for read-requests
 
+## We will start by showing the sequence diagrams for duckdb
 
+#### Mutations 
+- client submits appends or updates or functions requests via a requst queue
+- since we have a single process per request topic we do not need to write a speical facade or singleton pattern
+- we update control tables in Postgresql: content_index, goal_model, and other tables 
 
+```mermaid
+sequenceDiagram
+    client_api->>+request_queue: Nats JS Queue: Submit request function to a specific data model topic
+    request_queue->>+dispatcher: Invoke request function 
+    dispatcher->>+dispatcher: Find/check running instance of data model 
+    dispatcher->>+dispatcher: If target data model is not running, start teatree_db_manager server for data model  
+    dispatcher->>+teatree_db_manager: Send request (function, data payload) to teatree_db_manager for specific data model 
+```
+```mermaid
+sequenceDiagram
+    teetree_db_manager->>+control_db: update postgresql database metadata goal_model 
+    teatree_db_manager->>+function: Invoke function implementation 
+    teatree_db_manager->>+goal_model: access duckdb rw single connection goal_model.duckdb
+    teatree_db_manager->>+other_duckdb_files: access other read-only multi-connection duckdb files
+    teatree_db_manager->>+goal_model_ro: create read-only version of duckdb file
+    teatree_db_manager->>+goal_model_ro: create parquet files 
+    teetree_db_manager->>+control_db: update postgresql database metadata goal_model 
+```
+### Create ReadOnly versions
+- we keep one version forward so that when we switch duckdb versions client UI's is not locked 
+- we keep archives of the parquet files for each table in S3: folders corresponding to each goal_model_id
+```mermaid
+sequenceDiagram
+    teatree_db_manager->>+goal_model_ro.duckdb: create read-only version of duckdb file
+    teatree_db_manager->>+archive_parquet: create parquet files 
+    teetree_db_manager->>+control_db: update postgresql context_index.dbo 
+```
 
+#### Query 
+- we keep a separate versionized read-only duckdb file for multi-user reads 
+- this keeps us from implementing a facade / singleton pattern 
+- we update the read_only model everytime we do a write 
+
+```mermaid
+sequenceDiagram 
+    teatree_db_manager->>+query_function: Invoke function implementation 
+    teatree_db_manager->>+goal_model_ro: access duckdb ro muti-connection duckdb file
+```    
+
+#### Notifications 
+- When we finish a mutation or query we update the notifcation queue for clients subscribing to the request topic (ie: goal_model_id) 
+
+```mermaid
+sequenceDiagram     
+    teetree_db_manager->>+notification_queue: update subscriptions to notifcations paginated results
+```
 
 
 
