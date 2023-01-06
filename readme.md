@@ -52,6 +52,7 @@ Lets support both options with our solution.
 - support a direct connection for read-requests
 
 ## We will start by showing the sequence diagrams for duckdb
+- avoid the need for the facade/singleton pattern by having one file read-write serviced by a single queue and query to a read-only file for multi-user access. 
 
 #### Mutations 
 - client submits appends or updates or functions requests via a requst queue
