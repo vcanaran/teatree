@@ -121,13 +121,7 @@ sequenceDiagram
 - each POD now has vCPU, RAM, and access to a persistent volume 
 
 #### pod tpes 
-- Machine types are determined via experimentation.  
-- What is the goal_period timeframe?
-- What is the basis_period timeframe? 
-- how many sites?
-- how many products?
-- how many customers?
-- how many salespersons?  
+- Machine types are determined via experimentation in context of a domain. 
 
 Here is how we start: 
 - [ ] small: 2 vCPU, 2 GB RAM 
